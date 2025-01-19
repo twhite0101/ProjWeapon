@@ -2,6 +2,10 @@
 
 
 #include "CharacterClass.h"
+#include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 // Sets default values
 ACharacterClass::ACharacterClass()
@@ -18,6 +22,11 @@ void ACharacterClass::BeginPlay()
 	
 }
 
+void ACharacterClass::MouseClicked(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Mouse Clicked"))
+}
+
 // Called every frame
 void ACharacterClass::Tick(float DeltaTime)
 {
@@ -30,5 +39,17 @@ void ACharacterClass::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if (APlayerController* PlayerController = CastChecked<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(CharMappingContext, 0);
+		}
+	}
+
+	if (UEnhancedInputComponent* Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		Input->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ACharacterClass::MouseClicked);
+	}
 }
 
