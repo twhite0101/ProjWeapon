@@ -16,5 +16,7 @@ class AMyGameModeBase : public AGameModeBase
 
 public:
 	void AMyGameMode();
+
+private:
 	
 };

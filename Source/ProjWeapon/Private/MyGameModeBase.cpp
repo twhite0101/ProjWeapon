@@ -2,9 +2,13 @@
 
 
 #include "MyGameModeBase.h"
-#include "CharacterClass.h"
+#include "KitePawn.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerStart.h"
+#include "GameFramework/Actor.h"
 
 void AMyGameModeBase::AMyGameMode()
 {
-	PlayerControllerClass = ACharacterClass::StaticClass();
+	// Sets player controller class to the kite pawn's class
+	PlayerControllerClass = AKitePawn::StaticClass();
 }
