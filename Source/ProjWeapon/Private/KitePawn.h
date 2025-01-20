@@ -44,8 +44,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* BoxCollisionComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<AActor> BulletBP;
+
 	// Create function to call when the Equip Input Action (E key) event is triggered
 	void MouseClicked(const FInputActionValue& Value);
+
+	// Create bullet BP
+	void SpawnBullet();
 
 private:	
 

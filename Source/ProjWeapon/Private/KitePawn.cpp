@@ -21,6 +21,13 @@ AKitePawn::AKitePawn()
 	// Create static mesh component and attach to root component (box collider)
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMeshComponent->SetupAttachment(BoxCollisionComponent);
+
+	// Get and set reference to bullet BP
+	static ConstructorHelpers::FClassFinder<AActor> BlueprintClass(TEXT("/Content/Blueprints/BP_KitePawn"));
+	if (BlueprintClass.Succeeded())
+	{
+		BulletBP = BlueprintClass.Class;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -32,8 +39,34 @@ void AKitePawn::BeginPlay()
 
 void AKitePawn::MouseClicked(const FInputActionValue& Value)
 {
+	SpawnBullet();
 	// Logs that LMB was pressed
-	UE_LOG(LogTemp, Warning, TEXT("Mouse Clicked"))
+	UE_LOG(LogTemp, Warning, TEXT("Mouse Clicked"));
+}
+
+void AKitePawn::SpawnBullet()
+{
+	if (BulletBP)
+	{
+		// Get the location of the projectile socket on the static mesh and the kite's rotation
+		FVector SocketLocation = StaticMeshComponent->GetSocketLocation(FName("ProjectilePoint"));
+		FRotator SpawnRotation = GetActorRotation();
+
+		// Spawn the bullet
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+
+		AActor* SpawnedBullet = GetWorld()->SpawnActor<AActor>(BulletBP, SocketLocation, SpawnRotation, SpawnParams);
+		if (SpawnedBullet)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Successfully spawned a copy of the bullet!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Bullet BP is not set!"));
+	}
 }
 
 // Called every frame
