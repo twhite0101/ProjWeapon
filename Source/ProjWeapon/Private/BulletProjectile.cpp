@@ -3,6 +3,7 @@
 
 #include "BulletProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 ABulletProjectile::ABulletProjectile()
@@ -11,12 +12,16 @@ ABulletProjectile::ABulletProjectile()
 	// Bullet doesn't need to be called every frame so set to false
 	PrimaryActorTick.bCanEverTick = false;
 
+	BoxCollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collider"));
+	RootComponent = BoxCollisionComponent;
+
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Mesh"));
-	RootComponent = StaticMeshComponent;
+	StaticMeshComponent->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+	StaticMeshComponent->SetupAttachment(RootComponent);
 
 	ProjectileComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Component"));
 	ProjectileComponent->InitialSpeed = 800.0f;
-	ProjectileComponent->MaxSpeed = 1000.0f;
+	ProjectileComponent->MaxSpeed = 800.0f;
 
 }
 
@@ -32,5 +37,18 @@ void ABulletProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+// Function to initialize the velocity of the bullet projectile
+void ABulletProjectile::InitializeVelocity(const FVector& Direction)
+{
+	// Check if the projectile component was created successfully
+	if (ProjectileComponent)
+	{
+		// If so, assign the direction param that was passed multiplied by the initial speed set when created
+		ProjectileComponent->Velocity = Direction * ProjectileComponent->InitialSpeed;
+		// Activate the projectile
+		ProjectileComponent->Activate();
+	}
 }
 

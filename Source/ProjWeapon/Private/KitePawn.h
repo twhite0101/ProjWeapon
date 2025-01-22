@@ -10,6 +10,8 @@
 class UInputMappingContext;
 class UInputAction;
 class UBoxComponent;
+class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS()
 class AKitePawn : public APawn
@@ -40,6 +42,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* StaticMeshComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+	USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+	UCameraComponent* CameraComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* BoxCollisionComponent;

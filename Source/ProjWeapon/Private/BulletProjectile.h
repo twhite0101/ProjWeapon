@@ -7,6 +7,7 @@
 #include "BulletProjectile.generated.h"
 
 class UProjectileMovementComponent;
+class UBoxComponent;
 
 UCLASS()
 class ABulletProjectile : public AActor
@@ -20,13 +21,23 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Function to initialize the velocity of the bullet
+	void InitializeVelocity(const FVector& Direction);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Box collider
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UBoxComponent* BoxCollisionComponent;
+
+	// Static mesh
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* StaticMeshComponent;
 
+	// Projectile component
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UProjectileMovementComponent* ProjectileComponent;
+
 };
