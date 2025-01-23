@@ -64,6 +64,14 @@ void AKitePawn::MouseClicked(const FInputActionValue& Value)
 	SpawnBullet();
 	// Logs that LMB was pressed
 	UE_LOG(LogTemp, Warning, TEXT("Mouse Clicked"));
+
+	const int8 Min = 1;
+	const int8 Max = 7;
+
+	const int8 RandNum = FMath::RandRange(Min, Max);
+
+	UE_LOG(LogTemp, Warning, TEXT("%d"), RandNum);
+
 }
 
 void AKitePawn::SpawnBullet()
