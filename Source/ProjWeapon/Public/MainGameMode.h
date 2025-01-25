@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "MainGameMode.generated.h"
 
+class UUserWidget;
 /**
  * 
  */
@@ -16,6 +17,21 @@ class PROJWEAPON_API AMainGameMode : public AGameModeBase
 
 public:
 	AMainGameMode();
+
+	UFUNCTION(BlueprintCallable, Category = "Game Logic")
+	void StartLoop();
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<UUserWidget> RollWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<UUserWidget> StartWidgetClass;
+
+	UPROPERTY()
+    UUserWidget* RollWidgetInstance;
+
+	UPROPERTY()
+    UUserWidget* StartWidgetInstance;
 
 protected:
 	virtual void BeginPlay() override;

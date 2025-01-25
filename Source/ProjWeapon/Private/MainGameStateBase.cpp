@@ -3,6 +3,21 @@
 
 #include "MainGameStateBase.h"
 
+AMainGameStateBase::AMainGameStateBase()
+{
+    HasGameStarted = false;
+}
+
+bool AMainGameStateBase::GetHasGameStarted() const
+{
+    return HasGameStarted;
+}
+
+void AMainGameStateBase::SetHasGameStarted(bool GameStatus)
+{
+    HasGameStarted = GameStatus;
+}
+
 int32 AMainGameStateBase::GetRound() const
 {
     return CurrentRound;

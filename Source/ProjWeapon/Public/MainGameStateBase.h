@@ -15,6 +15,14 @@ class PROJWEAPON_API AMainGameStateBase : public AGameStateBase
 	GENERATED_BODY()
 
 public:
+	AMainGameStateBase();
+
+	UFUNCTION(BlueprintCallable, Category = "Game Logic")
+	bool GetHasGameStarted() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Game Logic")
+	virtual void SetHasGameStarted(bool GameStatus);
+
 	UFUNCTION(BlueprintCallable, Category = "Game Logic")
 	int32 GetRound() const;
 
@@ -46,6 +54,9 @@ public:
 	virtual void SetRoundStartStatus(bool NewStatus);
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = "Game Logic")
+	bool HasGameStarted;
+
 	UPROPERTY(VisibleAnywhere, Category = "Game Logic")
 	int32 CurrentRound;
 
