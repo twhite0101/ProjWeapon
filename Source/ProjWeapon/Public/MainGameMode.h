@@ -7,6 +7,7 @@
 #include "MainGameMode.generated.h"
 
 class UUserWidget;
+class UDiceRollWidget;
 /**
  * 
  */
@@ -21,6 +22,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Logic")
 	void StartLoop();
 
+	UFUNCTION(BlueprintCallable, Category = "Game Logic")
+	void SetVelocityAndArc();
+
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
     TSubclassOf<UUserWidget> RollWidgetClass;
 
@@ -28,7 +32,7 @@ public:
     TSubclassOf<UUserWidget> StartWidgetClass;
 
 	UPROPERTY()
-    UUserWidget* RollWidgetInstance;
+    UDiceRollWidget* RollWidgetInstance;
 
 	UPROPERTY()
     UUserWidget* StartWidgetInstance;
