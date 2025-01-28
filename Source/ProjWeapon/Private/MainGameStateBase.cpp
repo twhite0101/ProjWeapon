@@ -2,10 +2,39 @@
 
 
 #include "MainGameStateBase.h"
+#include "GameFramework/PlayerStart.h"
+#include "Kismet/GameplayStatics.h"
 
 AMainGameStateBase::AMainGameStateBase()
 {
+    // Set game start to false to ensure game loop hasn't begun yet
     HasGameStarted = false;
+
+    // Get PlayerStart and assign its FVector location to StartPoint
+    TArray<AActor*> PlayerStarts;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
+
+    if (PlayerStarts.Num() > 0)
+    {
+        APlayerStart* KitePlayerStart = Cast<APlayerStart>(PlayerStarts[0]);
+        if (KitePlayerStart)
+        {
+            StartPoint = KitePlayerStart->GetActorLocation();
+        }
+    }
+
+    //Get End Point object in world and assign its FVector location to EndPoint
+    TArray<AActor*> EndPoints;
+    UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("EndPoint"), EndPoints);
+
+    if (EndPoints.Num() > 0)
+    {
+        AActor* EndObject = Cast<AActor>(EndPoints[0]);
+        if (EndObject)
+        {
+            EndPoint = EndObject->GetActorLocation();
+        }
+    }
 }
 
 bool AMainGameStateBase::GetHasGameStarted() const
@@ -66,4 +95,14 @@ bool AMainGameStateBase::GetRoundStartStatus() const
 void AMainGameStateBase::SetRoundStartStatus(bool NewStatus)
 {
     HasRoundStarted = NewStatus;
+}
+
+FVector AMainGameStateBase::GetStartPoint() const
+{
+    return StartPoint;
+}
+
+FVector AMainGameStateBase::GetEndPoint() const
+{
+    return EndPoint;
 }

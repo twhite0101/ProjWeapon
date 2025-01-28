@@ -53,6 +53,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Logic")
 	virtual void SetRoundStartStatus(bool NewStatus);
 
+	UFUNCTION(BlueprintCallable, Category = "Game Logic")
+	FVector GetStartPoint() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Game Logic")
+	FVector GetEndPoint() const;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Game Logic")
 	bool HasGameStarted;
@@ -71,5 +77,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Game Logic")
 	bool HasRoundEnded;
+
+	UPROPERTY(VisibleAnywhere, Category = "Game Logic")
+	FVector StartPoint;
+
+	UPROPERTY(VisibleAnywhere, Category = "Game Logic")
+	FVector EndPoint;
 	
 };

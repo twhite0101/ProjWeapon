@@ -131,3 +131,12 @@ void AKitePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void AKitePawn::AddForce(int32 Force)
+{
+	if (BoxCollisionComponent)
+	{
+		float ForceFloat = static_cast<float>(Force);
+		BoxCollisionComponent->AddForce(FVector(ForceFloat, 0.0f, 0.0f), NAME_None, true);
+	}
+}
+

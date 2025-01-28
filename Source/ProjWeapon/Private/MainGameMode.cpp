@@ -9,6 +9,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "DiceRollWidget.h"
+#include "KitePawn.h"
 
 AMainGameMode::AMainGameMode()
 {
@@ -141,10 +142,102 @@ void AMainGameMode::SetVelocityAndArc()
                 // Set Round Start to true
                 // Unpause world
                 RollWidgetInstance->RemoveFromParent();
-                RollWidgetInstance = nullptr;
+                // RollWidgetInstance = nullptr;
                 MainGameState->SetRoundStartStatus(true);
                 GetWorld()->GetFirstPlayerController()->SetPause(false);
+                StartRound();
             }
         }
     }
+}
+
+void AMainGameMode::StartRound()
+{
+    AMainGameStateBase* MainGameState = Cast<AMainGameStateBase>(GameState);
+    if (MainGameState && MainGameState->GetRoundStartStatus())
+    {
+        // Get values for Velocity, Arc, Start Point and End Point, and assign them locally
+        int32 Velocity = RollWidgetInstance->GetVelcoity();
+        int32 Arc = RollWidgetInstance->GetArc();
+        FVector Start = MainGameState->GetStartPoint();
+        FVector End = MainGameState->GetEndPoint();
+
+        // Create the curve path
+        // Currently draws debug line to confirm path was correctly done but will be removed as dev progersses
+        CreateAndDrawCurve(GetWorld(), Start, End, Arc, 20);
+    }
+}
+
+// Quadradic Bezier curve is defined by three control points: start, end, and a control point (which determines the curve's shape)
+// Formula as a reminder for future use: P(t) = (1 - t)^2 * P0 + 2(1 = t)t * P1 + t^2 * P2
+// P0 is the starting point, P1 is the control point, P2 is the end point, and t ranges from 0 to 1
+FVector AMainGameMode::CalculateBezierPoint(const FVector& Start, const FVector& Control, const FVector& End, float T)
+{
+    float TDifference = 1.0f - T;
+    return (TDifference * TDifference * Start) + (2.0f * TDifference * T * Control) + (T * T * End);
+}
+
+// Generate perpendicular vector point on the Z axis based on the Arc value rolled
+FVector AMainGameMode::GetControlPoint(const FVector& Start, const FVector& End, int32 Curve)
+{
+    // Generate mid point vector between the Start and End points
+    FVector Mid = (Start + End) * 0.5f;
+
+    // Modify Z-axis value of mid point vector based on the Arc value
+    // Multiply Arc value by 0.17 (equvalent of 1/6 to simulate weight of the dice roll)
+    // Multiply that product by the value of the Z-axis on the mid point
+    // Add that value to the current Z-axis value of the mid point
+    // Set the value of the Z-axis mid point to that sum
+    Mid.Z = Mid.Z + (Mid.Z * (Curve * 0.17f));
+
+    // Return the FVector of the mid point
+    return Mid;
+}
+
+// Generate points that would map out the curve of the line path between the player start and the end point
+TArray<FVector> AMainGameMode::GenerateCurvePoints(const FVector& Start, const FVector& End, int32 Curvature, int32 NumSegments)
+{
+    // Create array of vector points
+    TArray<FVector> CurvePoints;
+
+    // Generate the control point via the GetControlPoint function created
+    FVector ControlPoint = GetControlPoint(Start, End, Curvature);
+
+    // Complete for loop based on the NumSegments param provided
+    for (int32 i = 0; i <= NumSegments; i++)
+    {
+        // Generate T by converting i to a float and dividing it by NumSegments
+        float T = static_cast<float>(i) / NumSegments;
+        // Call CalculateBezierPoint to generate a curvature point, passing in Start, ControlPoint, End, and T
+        FVector Point = CalculateBezierPoint(Start, ControlPoint, End, T);
+        // Add the point to the CurvePoints array
+        CurvePoints.Add(Point);
+    }
+
+    // Return the CurvePoints Array
+    return CurvePoints;
+}
+
+// Draws debug line based on curve points to confirm curve was calculated correctly
+void AMainGameMode::DrawCurve(const TArray<FVector>& CurvePoints, UWorld* World, const FVector& End)
+{
+    for (int32 i = 0; i < CurvePoints.Num(); i++)
+    {
+        if (i + 1 < CurvePoints.Num())
+        {
+            DrawDebugLine(World, CurvePoints[i], CurvePoints[i + 1], FColor::Green, false, 5.0f, 0, 2.0f);
+        }
+        else if (i + 1 == CurvePoints.Num())
+        {
+            DrawDebugLine(World, CurvePoints[i], End, FColor::Green, false, 5.0f, 0, 2.0f);
+        }
+    }
+}
+
+// Refactored function for creating the points along the curve path for the player to travel and draw a debug line to confirm it (for now)
+// Will update logic and be removing debug line eventually
+void AMainGameMode::CreateAndDrawCurve(UWorld* CurrentWorld, const FVector& Start, const FVector& End, int32 Curvature, int32 NumSegments)
+{
+    TArray<FVector> CurvePoints = GenerateCurvePoints(Start, End, Curvature, NumSegments);
+    DrawCurve(CurvePoints, CurrentWorld, End);
 }
