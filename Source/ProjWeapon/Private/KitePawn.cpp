@@ -108,6 +108,33 @@ void AKitePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Check if kite pawn is currently moving and if the current index of the target points is valid
+	if (bIsMoving && TargetPoints.IsValidIndex(CurrentTargetIndex))
+	{
+		// If so, get the kite pawn's current location and get the target location based on the current indexed element in the points array
+		FVector CurrentLocation = GetActorLocation();
+		FVector TargetLocation = TargetPoints[CurrentTargetIndex];
+
+		// Assign the new location by interpolating the kite's current location, the taget location, deltatime and the current move speed
+		// Current move speed should be assigned in gamemode before setting target points
+		// Then set kite's new location
+		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetLocation, DeltaTime, CurrentMoveSpeed);
+		SetActorLocation(NewLocation);
+
+		// Check if distance between the current location of the kite and the target point are less than or equal to the Stop distance
+		if (FVector::Dist(CurrentLocation, TargetLocation) <= StopDistance)
+		{
+			// if so, increase the current target index by one
+			CurrentTargetIndex++;
+
+			// If the current target index is greater than or equal to the number of target points, then stop moving
+			if (CurrentTargetIndex >= TargetPoints.Num())
+			{
+				bIsMoving = false;
+			}
+		}
+	}
+
 }
 
 // Called to bind functionality to input
@@ -140,3 +167,26 @@ void AKitePawn::AddForce(int32 Force)
 	}
 }
 
+// Setter for target points of path for kite to travel on
+void AKitePawn::SetTargetPoints(const TArray<FVector>& Points)
+{
+	TargetPoints = Points;
+	CurrentTargetIndex = 0;
+
+	if (TargetPoints.Num() > 0)
+	{
+		bIsMoving = true;
+	}
+}
+
+// Setter for the current move speed
+void AKitePawn::SetMoveSpeed(const int32 Velocity)
+{
+	CurrentMoveSpeed = Velocity;
+}
+
+// Getter for the default move speed
+float AKitePawn::GetDefaultMoveSpeed() const
+{
+	return DefaultMoveSpeed;
+}

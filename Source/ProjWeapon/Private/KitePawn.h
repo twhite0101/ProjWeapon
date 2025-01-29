@@ -30,6 +30,12 @@ public:
 
 	void AddForce(int32 Force);
 
+	void SetTargetPoints(const TArray<FVector>& Points);
+
+	void SetMoveSpeed(const int32 Velocity);
+
+	float GetDefaultMoveSpeed() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,6 +70,16 @@ protected:
 	void SpawnBullet();
 
 private:	
+	TArray<FVector> TargetPoints;
 
+	int32 CurrentTargetIndex = 0;
+
+	bool bIsMoving = false;
+
+	float DefaultMoveSpeed = 200.0f;
+
+	float CurrentMoveSpeed;
+
+	float StopDistance = 10.0f;
 
 };

@@ -164,7 +164,7 @@ void AMainGameMode::StartRound()
 
         // Create the curve path
         // Currently draws debug line to confirm path was correctly done but will be removed as dev progersses
-        CreateAndDrawCurve(GetWorld(), Start, End, Arc, 20);
+        CreateCurveAndMove(GetWorld(), Start, End, Arc, 20);
     }
 }
 
@@ -234,10 +234,22 @@ void AMainGameMode::DrawCurve(const TArray<FVector>& CurvePoints, UWorld* World,
     }
 }
 
-// Refactored function for creating the points along the curve path for the player to travel and draw a debug line to confirm it (for now)
-// Will update logic and be removing debug line eventually
-void AMainGameMode::CreateAndDrawCurve(UWorld* CurrentWorld, const FVector& Start, const FVector& End, int32 Curvature, int32 NumSegments)
+// Creates target points along a curved line for kite pawn to travel on and then sets target points in kite pawn to trigger movement
+// Also still draws debug line but will be removed
+void AMainGameMode::CreateCurveAndMove(UWorld* CurrentWorld, const FVector& Start, const FVector& End, int32 Curvature, int32 NumSegments)
 {
+    // Create array of target points along a curve by calling GenerateCurvePoints local function
+    // Create pointer for kite pawn
     TArray<FVector> CurvePoints = GenerateCurvePoints(Start, End, Curvature, NumSegments);
+    AKitePawn* KitePawn = Cast<AKitePawn>(UGameplayStatics::GetPlayerPawn(this, 0));
+    // Check if kite pawn was successfully cast to pointer
+    if (KitePawn)
+    {
+        // If successful, set current movement speed on kite pawn by passing in the product of the kite's default movement speed and the rolled velocity
+        // Then, set the target points in the kite pawn by passing in the CurvePoints array
+        KitePawn->SetMoveSpeed((KitePawn->GetDefaultMoveSpeed() * RollWidgetInstance->GetVelcoity()));
+        KitePawn->SetTargetPoints(CurvePoints);
+    }
+    //Draw debug lien curve for path confirmation
     DrawCurve(CurvePoints, CurrentWorld, End);
 }

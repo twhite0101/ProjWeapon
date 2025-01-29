@@ -41,7 +41,7 @@ public:
 	void DrawCurve(const TArray<FVector>& CurvePoints, UWorld* World, const FVector& End);
 
 	UFUNCTION(BlueprintCallable, Category = "Debug")
-	void CreateAndDrawCurve(UWorld* CurrentWorld, const FVector& Start, const FVector& End, int32 Curvature, int32 NumSegments);
+	void CreateCurveAndMove(UWorld* CurrentWorld, const FVector& Start, const FVector& End, int32 Curvature, int32 NumSegments);
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
     TSubclassOf<UUserWidget> RollWidgetClass;
